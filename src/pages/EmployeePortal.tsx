@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical } from "lucide-react";
+import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical, Heart, Award } from "lucide-react";
 
 type Screen = "home" | "result" | "success";
 
 const EmployeePortal = () => {
-  const { logout, scannedStudent, scanStudent, resetScannedStudent, updateCredits } = useUser();
+  const { logout, scannedStudent, scanStudent, resetScannedStudent, updateCredits, addCredits } = useUser();
   const [screen, setScreen] = useState<Screen>("home");
   const [fineAlert, setFineAlert] = useState(false);
+  const [isReward, setIsReward] = useState(false);
+  const [maxCredits, setMaxCredits] = useState(false);
 
   const handleScan = () => {
     scanStudent();
@@ -17,12 +19,28 @@ const EmployeePortal = () => {
 
   const handleViolation = (points: number, reason: string) => {
     if (!scannedStudent) return;
+    setIsReward(false);
     const isFine = updateCredits(scannedStudent.id, points, reason);
     setFineAlert(isFine);
     setScreen("success");
     setTimeout(() => {
       setScreen("home");
       setFineAlert(false);
+      setMaxCredits(false);
+      resetScannedStudent();
+    }, 2500);
+  };
+
+  const handleReward = () => {
+    if (!scannedStudent) return;
+    setIsReward(true);
+    const isMax = addCredits(scannedStudent.id, 10, "Volunteer/Contribution");
+    setMaxCredits(isMax);
+    setScreen("success");
+    setTimeout(() => {
+      setScreen("home");
+      setMaxCredits(false);
+      setIsReward(false);
       resetScannedStudent();
     }, 2500);
   };
@@ -91,6 +109,14 @@ const EmployeePortal = () => {
                 <FlaskConical className="mr-2 w-5 h-5" />
                 Skipping Lab (-20 pts)
               </Button>
+              <Button
+                variant="success"
+                className="w-full h-14 text-base"
+                onClick={handleReward}
+              >
+                <Heart className="mr-2 w-5 h-5" />
+                Volunteer/Contribution (+10 pts)
+              </Button>
             </div>
 
             <Button variant="ghost" className="w-full" onClick={() => { setScreen("home"); resetScannedStudent(); }}>
@@ -101,11 +127,18 @@ const EmployeePortal = () => {
 
         {screen === "success" && (
           <div className="text-center space-y-4">
-            <div className="mx-auto w-20 h-20 rounded-full bg-success/10 flex items-center justify-center animate-in zoom-in duration-300">
+            <div className={`mx-auto w-20 h-20 rounded-full flex items-center justify-center animate-in zoom-in duration-300 ${isReward ? "bg-success/10" : "bg-success/10"}`}>
               <CheckCircle className="w-12 h-12 text-success" />
             </div>
             <h2 className="text-xl font-bold text-foreground">Thank You – Recorded</h2>
             <p className="text-sm text-muted-foreground">Redirecting to scanner...</p>
+
+            {maxCredits && (
+              <div className="bg-primary/10 border border-primary rounded-xl p-4 flex items-center gap-3">
+                <Award className="w-6 h-6 text-primary shrink-0" />
+                <p className="text-sm font-semibold text-foreground">Max Credits Reached (800/800)!</p>
+              </div>
+            )}
 
             {fineAlert && (
               <div className="bg-warning/10 border border-warning rounded-xl p-4 flex items-start gap-3 text-left">

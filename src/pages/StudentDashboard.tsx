@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import CircularProgress from "@/components/CircularProgress";
-import { LogOut, QrCode, X, AlertTriangle } from "lucide-react";
+import { LogOut, QrCode, X, AlertTriangle, Heart } from "lucide-react";
 
 const StudentDashboard = () => {
   const { currentStudent, logout } = useUser();
@@ -37,13 +37,19 @@ const StudentDashboard = () => {
               {currentStudent.violations.map((v) => (
                 <div key={v.id} className="bg-card border border-border rounded-lg p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <AlertTriangle className="w-5 h-5 text-warning" />
+                    {v.impact > 0 ? (
+                      <Heart className="w-5 h-5 text-success" />
+                    ) : (
+                      <AlertTriangle className="w-5 h-5 text-warning" />
+                    )}
                     <div>
                       <p className="text-sm font-medium text-foreground">{v.title}</p>
                       <p className="text-xs text-muted-foreground">{v.date}</p>
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-destructive">{v.impact}</span>
+                  <span className={`text-sm font-bold ${v.impact > 0 ? "text-success" : "text-destructive"}`}>
+                    {v.impact > 0 ? `+${v.impact}` : v.impact}
+                  </span>
                 </div>
               ))}
             </div>
