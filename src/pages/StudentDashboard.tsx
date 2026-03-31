@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import CircularProgress from "@/components/CircularProgress";
-import { LogOut, QrCode, X, AlertTriangle } from "lucide-react";
+import { LogOut, QrCode, X, AlertTriangle, Heart } from "lucide-react";
 
 const StudentDashboard = () => {
   const { currentStudent, logout } = useUser();
