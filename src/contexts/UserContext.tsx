@@ -23,6 +23,7 @@ interface UserContextType {
   login: (isStudent: boolean) => void;
   logout: () => void;
   updateCredits: (studentId: string, points: number, reason: string) => boolean;
+  addCredits: (studentId: string, points: number, reason: string) => boolean;
   resetScannedStudent: () => void;
   scannedStudent: Student | null;
   scanStudent: () => void;
