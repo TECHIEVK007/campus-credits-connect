@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical } from "lucide-react";
+import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical, Heart, Award } from "lucide-react";
 
 type Screen = "home" | "result" | "success";
 
