@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical, Heart, Award } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical, Heart, Award, Loader2 } from "lucide-react";
 
 type Screen = "home" | "result" | "success";
 
@@ -11,43 +12,62 @@ const EmployeePortal = () => {
   const [fineAlert, setFineAlert] = useState(false);
   const [isReward, setIsReward] = useState(false);
   const [maxCredits, setMaxCredits] = useState(false);
+  const [rollInput, setRollInput] = useState("");
+  const [scanError, setScanError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleScan = () => {
-    scanStudent();
-    setScreen("result");
+  const handleScan = async () => {
+    if (!rollInput.trim()) {
+      setScanError("Enter a roll number");
+      return;
+    }
+    setLoading(true);
+    setScanError(null);
+    const err = await scanStudent(rollInput.trim());
+    setLoading(false);
+    if (err) {
+      setScanError(err);
+    } else {
+      setScreen("result");
+    }
   };
 
-  const handleViolation = (points: number, reason: string) => {
+  const handleViolation = async (points: number, reason: string) => {
     if (!scannedStudent) return;
+    setLoading(true);
     setIsReward(false);
-    const isFine = updateCredits(scannedStudent.id, points, reason);
+    const isFine = await updateCredits(scannedStudent.id, points, reason);
     setFineAlert(isFine);
+    setLoading(false);
     setScreen("success");
     setTimeout(() => {
       setScreen("home");
       setFineAlert(false);
       setMaxCredits(false);
+      setRollInput("");
       resetScannedStudent();
     }, 2500);
   };
 
-  const handleReward = () => {
+  const handleReward = async () => {
     if (!scannedStudent) return;
+    setLoading(true);
     setIsReward(true);
-    const isMax = addCredits(scannedStudent.id, 10, "Volunteer/Contribution");
+    const isMax = await addCredits(scannedStudent.id, 10, "Volunteer/Contribution");
     setMaxCredits(isMax);
+    setLoading(false);
     setScreen("success");
     setTimeout(() => {
       setScreen("home");
       setMaxCredits(false);
       setIsReward(false);
+      setRollInput("");
       resetScannedStudent();
     }, 2500);
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <header className="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground">Employee Portal</p>
@@ -64,18 +84,25 @@ const EmployeePortal = () => {
             <div className="mx-auto w-24 h-24 rounded-full bg-accent flex items-center justify-center">
               <ScanLine className="w-12 h-12 text-accent-foreground" />
             </div>
-            <h2 className="text-xl font-bold text-foreground">Ready to Scan</h2>
-            <p className="text-sm text-muted-foreground">Tap below to simulate scanning a student's QR code</p>
-            <Button className="w-full h-14 text-base" onClick={handleScan}>
-              <ScanLine className="mr-2 w-5 h-5" />
-              Start Scanning
-            </Button>
+            <h2 className="text-xl font-bold text-foreground">Scan Student</h2>
+            <div className="space-y-3">
+              <Input
+                placeholder="Enter student roll number"
+                value={rollInput}
+                onChange={(e) => setRollInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleScan()}
+              />
+              {scanError && <p className="text-sm text-destructive">{scanError}</p>}
+              <Button className="w-full h-14 text-base" onClick={handleScan} disabled={loading}>
+                {loading ? <Loader2 className="mr-2 w-5 h-5 animate-spin" /> : <ScanLine className="mr-2 w-5 h-5" />}
+                Look Up Student
+              </Button>
+            </div>
           </div>
         )}
 
         {screen === "result" && scannedStudent && (
           <div className="w-full max-w-sm space-y-6">
-            {/* Student Info Card */}
             <div className="bg-card border border-border rounded-2xl p-6 text-center space-y-2">
               <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-2xl font-bold text-primary">
@@ -83,7 +110,7 @@ const EmployeePortal = () => {
                 </span>
               </div>
               <h2 className="text-lg font-bold text-foreground">{scannedStudent.name}</h2>
-              <p className="text-sm text-muted-foreground">{scannedStudent.department}</p>
+              <p className="text-sm text-muted-foreground">{scannedStudent.department} • {scannedStudent.roll_number}</p>
               <div className="bg-accent rounded-lg py-2 px-4 inline-block">
                 <span className="text-sm font-semibold text-accent-foreground">
                   Credits: {scannedStudent.credits} / 800
@@ -91,12 +118,12 @@ const EmployeePortal = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="space-y-3">
               <Button
                 variant="destructive"
                 className="w-full h-14 text-base"
                 onClick={() => handleViolation(10, "Uniform Violation")}
+                disabled={loading}
               >
                 <Shirt className="mr-2 w-5 h-5" />
                 Uniform Violation (-10 pts)
@@ -105,6 +132,7 @@ const EmployeePortal = () => {
                 variant="warning"
                 className="w-full h-14 text-base"
                 onClick={() => handleViolation(20, "Skipping Lab")}
+                disabled={loading}
               >
                 <FlaskConical className="mr-2 w-5 h-5" />
                 Skipping Lab (-20 pts)
@@ -113,6 +141,7 @@ const EmployeePortal = () => {
                 variant="success"
                 className="w-full h-14 text-base"
                 onClick={handleReward}
+                disabled={loading}
               >
                 <Heart className="mr-2 w-5 h-5" />
                 Volunteer/Contribution (+10 pts)
@@ -127,7 +156,7 @@ const EmployeePortal = () => {
 
         {screen === "success" && (
           <div className="text-center space-y-4">
-            <div className={`mx-auto w-20 h-20 rounded-full flex items-center justify-center animate-in zoom-in duration-300 ${isReward ? "bg-success/10" : "bg-success/10"}`}>
+            <div className="mx-auto w-20 h-20 rounded-full flex items-center justify-center animate-in zoom-in duration-300 bg-success/10">
               <CheckCircle className="w-12 h-12 text-success" />
             </div>
             <h2 className="text-xl font-bold text-foreground">Thank You – Recorded</h2>
