@@ -127,11 +127,18 @@ const EmployeePortal = () => {
 
         {screen === "success" && (
           <div className="text-center space-y-4">
-            <div className="mx-auto w-20 h-20 rounded-full bg-success/10 flex items-center justify-center animate-in zoom-in duration-300">
+            <div className={`mx-auto w-20 h-20 rounded-full flex items-center justify-center animate-in zoom-in duration-300 ${isReward ? "bg-success/10" : "bg-success/10"}`}>
               <CheckCircle className="w-12 h-12 text-success" />
             </div>
             <h2 className="text-xl font-bold text-foreground">Thank You – Recorded</h2>
             <p className="text-sm text-muted-foreground">Redirecting to scanner...</p>
+
+            {maxCredits && (
+              <div className="bg-primary/10 border border-primary rounded-xl p-4 flex items-center gap-3">
+                <Award className="w-6 h-6 text-primary shrink-0" />
+                <p className="text-sm font-semibold text-foreground">Max Credits Reached (800/800)!</p>
+              </div>
+            )}
 
             {fineAlert && (
               <div className="bg-warning/10 border border-warning rounded-xl p-4 flex items-start gap-3 text-left">
