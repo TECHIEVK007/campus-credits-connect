@@ -82,6 +82,32 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     return isFineTriggered;
   }, []);
 
+  // Central addCredits function — SQL-ready
+  const addCredits = useCallback((studentId: string, points: number, reason: string): boolean => {
+    const entry: Violation = {
+      id: crypto.randomUUID(),
+      title: reason,
+      impact: points,
+      date: new Date().toISOString().split("T")[0],
+    };
+
+    let isMaxReached = false;
+
+    setStudent((prev) => {
+      const newCredits = Math.min(800, prev.credits + points);
+      isMaxReached = newCredits >= 800;
+      const updated = {
+        ...prev,
+        credits: newCredits,
+        violations: [entry, ...prev.violations],
+      };
+      setScannedStudent(updated);
+      return updated;
+    });
+
+    return isMaxReached;
+  }, []);
+
   const scanStudent = useCallback(() => {
     setScannedStudent({ ...student });
   }, [student]);
