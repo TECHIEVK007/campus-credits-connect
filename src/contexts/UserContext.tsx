@@ -118,7 +118,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <UserContext.Provider
-      value={{ isLoggedIn, isStudent, currentStudent: student, login, logout, updateCredits, scannedStudent, scanStudent, resetScannedStudent }}
+      value={{ isLoggedIn, isStudent, currentStudent: student, login, logout, updateCredits, addCredits, scannedStudent, scanStudent, resetScannedStudent }}
     >
       {children}
     </UserContext.Provider>
