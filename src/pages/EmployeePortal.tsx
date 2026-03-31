@@ -6,9 +6,11 @@ import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical, Hear
 type Screen = "home" | "result" | "success";
 
 const EmployeePortal = () => {
-  const { logout, scannedStudent, scanStudent, resetScannedStudent, updateCredits } = useUser();
+  const { logout, scannedStudent, scanStudent, resetScannedStudent, updateCredits, addCredits } = useUser();
   const [screen, setScreen] = useState<Screen>("home");
   const [fineAlert, setFineAlert] = useState(false);
+  const [isReward, setIsReward] = useState(false);
+  const [maxCredits, setMaxCredits] = useState(false);
 
   const handleScan = () => {
     scanStudent();
