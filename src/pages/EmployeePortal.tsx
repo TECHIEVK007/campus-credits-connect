@@ -19,12 +19,28 @@ const EmployeePortal = () => {
 
   const handleViolation = (points: number, reason: string) => {
     if (!scannedStudent) return;
+    setIsReward(false);
     const isFine = updateCredits(scannedStudent.id, points, reason);
     setFineAlert(isFine);
     setScreen("success");
     setTimeout(() => {
       setScreen("home");
       setFineAlert(false);
+      setMaxCredits(false);
+      resetScannedStudent();
+    }, 2500);
+  };
+
+  const handleReward = () => {
+    if (!scannedStudent) return;
+    setIsReward(true);
+    const isMax = addCredits(scannedStudent.id, 10, "Volunteer/Contribution");
+    setMaxCredits(isMax);
+    setScreen("success");
+    setTimeout(() => {
+      setScreen("home");
+      setMaxCredits(false);
+      setIsReward(false);
       resetScannedStudent();
     }, 2500);
   };
