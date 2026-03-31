@@ -1,0 +1,59 @@
+import { useState } from "react";
+import { useUser } from "@/contexts/UserContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { GraduationCap, ShieldCheck } from "lucide-react";
+
+const Login = () => {
+  const { login } = useUser();
+  const [idNumber, setIdNumber] = useState("");
+  const [password, setPassword] = useState("");
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
+      <div className="w-full max-w-sm space-y-8">
+        {/* Branding */}
+        <div className="text-center space-y-2">
+          <div className="mx-auto w-16 h-16 rounded-2xl bg-primary flex items-center justify-center">
+            <GraduationCap className="w-8 h-8 text-primary-foreground" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">Campus Governance</h1>
+          <p className="text-sm text-muted-foreground">Credit & Discipline Management System</p>
+        </div>
+
+        {/* Form */}
+        <div className="space-y-4">
+          <Input
+            placeholder="ID Number"
+            value={idNumber}
+            onChange={(e) => setIdNumber(e.target.value)}
+          />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        {/* Dual Login Buttons */}
+        <div className="space-y-3">
+          <Button className="w-full h-12 text-base" onClick={() => login(true)}>
+            <GraduationCap className="mr-2 w-5 h-5" />
+            Login as Student
+          </Button>
+          <Button variant="outline" className="w-full h-12 text-base border-primary text-primary hover:bg-accent" onClick={() => login(false)}>
+            <ShieldCheck className="mr-2 w-5 h-5" />
+            Login as Staff
+          </Button>
+        </div>
+
+        <p className="text-xs text-center text-muted-foreground">
+          Toggle between roles for testing. No credentials required.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
