@@ -14,7 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      credit_history: {
+        Row: {
+          created_at: string
+          id: string
+          impact: number
+          student_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          impact: number
+          student_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          impact?: number
+          student_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_history_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      students: {
+        Row: {
+          created_at: string
+          credits: number
+          department: string
+          id: string
+          name: string
+          roll_number: string
+          updated_at: string
+          violation_count: number
+        }
+        Insert: {
+          created_at?: string
+          credits?: number
+          department?: string
+          id?: string
+          name: string
+          roll_number: string
+          updated_at?: string
+          violation_count?: number
+        }
+        Update: {
+          created_at?: string
+          credits?: number
+          department?: string
+          id?: string
+          name?: string
+          roll_number?: string
+          updated_at?: string
+          violation_count?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
