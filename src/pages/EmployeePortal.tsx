@@ -109,6 +109,14 @@ const EmployeePortal = () => {
                 <FlaskConical className="mr-2 w-5 h-5" />
                 Skipping Lab (-20 pts)
               </Button>
+              <Button
+                variant="success"
+                className="w-full h-14 text-base"
+                onClick={handleReward}
+              >
+                <Heart className="mr-2 w-5 h-5" />
+                Volunteer/Contribution (+10 pts)
+              </Button>
             </div>
 
             <Button variant="ghost" className="w-full" onClick={() => { setScreen("home"); resetScannedStudent(); }}>
