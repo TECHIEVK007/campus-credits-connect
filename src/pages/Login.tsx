@@ -66,7 +66,7 @@ const Login = () => {
         </div>
 
         <div className="text-xs text-center text-muted-foreground space-y-1">
-          <p>Students: Use your Roll Number + password <strong>stu1</strong></p>
+          <p>Students: Use your Roll Number + password <strong>ROLL</strong></p>
           <p>Staff: ID <strong>STAFF001</strong> / Password <strong>admin123</strong></p>
         </div>
       </div>

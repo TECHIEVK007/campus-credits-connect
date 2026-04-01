@@ -77,7 +77,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const login = useCallback(async (idNumber: string, password: string, asStudent: boolean): Promise<string | null> => {
     if (asStudent) {
-      if (password !== "stu1") return "Invalid password";
+      if (password !== "ROLL") return "Invalid password";
       const student = await fetchStudentWithHistory(idNumber);
       if (!student) return "Roll number not found";
       setCurrentStudent(student);
