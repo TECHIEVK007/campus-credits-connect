@@ -77,9 +77,11 @@ const StudentDashboard = () => {
                 <X className="w-4 h-4" />
               </Button>
             </div>
-            <div className="mx-auto w-48 h-48 bg-muted rounded-xl flex items-center justify-center border-2 border-dashed border-border">
-              <QrCode className="w-20 h-20 text-primary" />
-            </div>
+            <img
+              src={`/qrcodes/${currentStudent.roll_number}.png`}
+              alt={`QR Code for ${currentStudent.roll_number}`}
+              className="mx-auto w-48 h-48 rounded-xl border border-border object-contain"
+            />
             <p className="text-xs text-muted-foreground">{currentStudent.roll_number}</p>
           </div>
         </div>
