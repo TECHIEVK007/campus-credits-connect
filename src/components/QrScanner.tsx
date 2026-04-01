@@ -7,8 +7,6 @@ interface QrScannerProps {
 }
 
 const QrScanner = ({ onScan, onClose }: QrScannerProps) => {
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const startedRef = useRef(false);
   const onScanRef = useRef(onScan);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,39 +15,35 @@ const QrScanner = ({ onScan, onClose }: QrScannerProps) => {
   useEffect(() => {
     let cancelled = false;
     const scanner = new Html5Qrcode("qr-reader");
-    scannerRef.current = scanner;
 
-    scanner
+    const startPromise = scanner
       .start(
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         (decodedText) => {
           if (cancelled) return;
           cancelled = true;
-          startedRef.current = false;
           scanner.stop().catch(() => {});
           onScanRef.current(decodedText.trim());
         },
         () => {}
       )
-      .then(() => {
-        if (!cancelled) {
-          startedRef.current = true;
-        }
-      })
       .catch(() => {
-        startedRef.current = false;
         if (!cancelled) {
           setError("Camera access denied. Please allow camera permissions.");
         }
+        return null; // signal that start failed
       });
 
     return () => {
       cancelled = true;
-      if (startedRef.current) {
-        startedRef.current = false;
-        scanner.stop().catch(() => {});
-      }
+      // Wait for start to resolve/reject before calling stop
+      startPromise.then((result) => {
+        // result is null if start failed (caught above)
+        if (result !== null) {
+          scanner.stop().catch(() => {});
+        }
+      });
     };
   }, []);
 
