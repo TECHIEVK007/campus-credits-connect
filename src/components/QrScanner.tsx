@@ -7,31 +7,45 @@ interface QrScannerProps {
 }
 
 const QrScanner = ({ onScan, onClose }: QrScannerProps) => {
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const onScanRef = useRef(onScan);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const scanner = new Html5Qrcode("qr-reader");
-    scannerRef.current = scanner;
+  onScanRef.current = onScan;
 
-    scanner
+  useEffect(() => {
+    let cancelled = false;
+    const scanner = new Html5Qrcode("qr-reader");
+
+    const startPromise = scanner
       .start(
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         (decodedText) => {
+          if (cancelled) return;
+          cancelled = true;
           scanner.stop().catch(() => {});
-          onScan(decodedText.trim());
+          onScanRef.current(decodedText.trim());
         },
         () => {}
       )
       .catch(() => {
-        setError("Camera access denied. Please allow camera permissions.");
+        if (!cancelled) {
+          setError("Camera access denied. Please allow camera permissions.");
+        }
+        return null; // signal that start failed
       });
 
     return () => {
-      scanner.stop().catch(() => {});
+      cancelled = true;
+      // Wait for start to resolve/reject before calling stop
+      startPromise.then((result) => {
+        // result is null if start failed (caught above)
+        if (result !== null) {
+          scanner.stop().catch(() => {});
+        }
+      });
     };
-  }, [onScan]);
+  }, []);
 
   return (
     <div className="w-full max-w-sm space-y-4 text-center">
