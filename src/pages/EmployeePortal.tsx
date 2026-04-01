@@ -17,21 +17,28 @@ const EmployeePortal = () => {
   const [scanError, setScanError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleScan = async () => {
-    if (!rollInput.trim()) {
+  const handleScan = async (rollNumber?: string) => {
+    const roll = rollNumber || rollInput.trim();
+    if (!roll) {
       setScanError("Enter a roll number");
       return;
     }
     setLoading(true);
     setScanError(null);
-    const err = await scanStudent(rollInput.trim());
+    const err = await scanStudent(roll);
     setLoading(false);
     if (err) {
       setScanError(err);
+      setScreen("home");
     } else {
+      setRollInput(roll);
       setScreen("result");
     }
   };
+
+  const handleQrResult = useCallback((result: string) => {
+    handleScan(result);
+  }, []);
 
   const handleViolation = async (points: number, reason: string) => {
     if (!scannedStudent) return;
