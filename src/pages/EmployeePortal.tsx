@@ -101,11 +101,26 @@ const EmployeePortal = () => {
                 onKeyDown={(e) => e.key === "Enter" && handleScan()}
               />
               {scanError && <p className="text-sm text-destructive">{scanError}</p>}
-              <Button className="w-full h-14 text-base" onClick={handleScan} disabled={loading}>
+              <Button className="w-full h-14 text-base" onClick={() => handleScan()} disabled={loading}>
                 {loading ? <Loader2 className="mr-2 w-5 h-5 animate-spin" /> : <ScanLine className="mr-2 w-5 h-5" />}
                 Look Up Student
               </Button>
+              <Button variant="outline" className="w-full h-14 text-base" onClick={() => setScreen("qr")} disabled={loading}>
+                <Camera className="mr-2 w-5 h-5" />
+                Scan QR Code
+              </Button>
             </div>
+          </div>
+        )}
+
+        {screen === "qr" && (
+          <div className="text-center space-y-4 w-full max-w-sm">
+            <h2 className="text-xl font-bold text-foreground">Scan QR Code</h2>
+            <p className="text-sm text-muted-foreground">Point your camera at the student's QR code</p>
+            <QrScanner
+              onScan={(result) => handleScan(result)}
+              onClose={() => setScreen("home")}
+            />
           </div>
         )}
 
