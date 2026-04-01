@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical, Heart, Award, Loader2 } from "lucide-react";
+import QrScanner from "@/components/QrScanner";
+import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical, Heart, Award, Loader2, Camera } from "lucide-react";
 
-type Screen = "home" | "result" | "success";
+type Screen = "home" | "qr" | "result" | "success";
 
 const EmployeePortal = () => {
   const { logout, scannedStudent, scanStudent, resetScannedStudent, updateCredits, addCredits } = useUser();
