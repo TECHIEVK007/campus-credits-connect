@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical, Heart, Award, Loader2 } from "lucide-react";
+import QrScanner from "@/components/QrScanner";
+import { LogOut, ScanLine, CheckCircle, AlertTriangle, Shirt, FlaskConical, Heart, Award, Loader2, Camera } from "lucide-react";
 
-type Screen = "home" | "result" | "success";
+type Screen = "home" | "qr" | "result" | "success";
 
 const EmployeePortal = () => {
   const { logout, scannedStudent, scanStudent, resetScannedStudent, updateCredits, addCredits } = useUser();
@@ -16,21 +17,25 @@ const EmployeePortal = () => {
   const [scanError, setScanError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleScan = async () => {
-    if (!rollInput.trim()) {
+  const handleScan = async (rollNumber?: string) => {
+    const roll = rollNumber || rollInput.trim();
+    if (!roll) {
       setScanError("Enter a roll number");
       return;
     }
     setLoading(true);
     setScanError(null);
-    const err = await scanStudent(rollInput.trim());
+    const err = await scanStudent(roll);
     setLoading(false);
     if (err) {
       setScanError(err);
+      setScreen("home");
     } else {
+      setRollInput(roll);
       setScreen("result");
     }
   };
+
 
   const handleViolation = async (points: number, reason: string) => {
     if (!scannedStudent) return;
@@ -93,11 +98,26 @@ const EmployeePortal = () => {
                 onKeyDown={(e) => e.key === "Enter" && handleScan()}
               />
               {scanError && <p className="text-sm text-destructive">{scanError}</p>}
-              <Button className="w-full h-14 text-base" onClick={handleScan} disabled={loading}>
+              <Button className="w-full h-14 text-base" onClick={() => handleScan()} disabled={loading}>
                 {loading ? <Loader2 className="mr-2 w-5 h-5 animate-spin" /> : <ScanLine className="mr-2 w-5 h-5" />}
                 Look Up Student
               </Button>
+              <Button variant="outline" className="w-full h-14 text-base" onClick={() => setScreen("qr")} disabled={loading}>
+                <Camera className="mr-2 w-5 h-5" />
+                Scan QR Code
+              </Button>
             </div>
+          </div>
+        )}
+
+        {screen === "qr" && (
+          <div className="text-center space-y-4 w-full max-w-sm">
+            <h2 className="text-xl font-bold text-foreground">Scan QR Code</h2>
+            <p className="text-sm text-muted-foreground">Point your camera at the student's QR code</p>
+            <QrScanner
+              onScan={(result) => handleScan(result)}
+              onClose={() => setScreen("home")}
+            />
           </div>
         )}
 
