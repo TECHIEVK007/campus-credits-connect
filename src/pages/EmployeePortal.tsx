@@ -36,9 +36,6 @@ const EmployeePortal = () => {
     }
   };
 
-  const handleQrResult = useCallback((result: string) => {
-    handleScan(result);
-  }, []);
 
   const handleViolation = async (points: number, reason: string) => {
     if (!scannedStudent) return;
